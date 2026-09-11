@@ -1,0 +1,2 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<!doctype html><html lang="vi"><head><meta charset="UTF-8"><title>Quên mật khẩu | KhangGear</title></head><body><main><h1>Quên mật khẩu</h1><form method="post" action="${pageContext.request.contextPath}/forgot-password"><input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"><label>Email <input name="email" type="email" required value="${email}"></label><small>${fieldErrors.email}</small><button type="submit">Gửi OTP</button></form></main></body></html>

@@ -27,6 +27,13 @@ Tai lieu nay chi ghi nhan nghiep vu tu du an Servlet/JSP cu. Khong sao chep sour
 | JSP admin cu | JSP/JSTL moi |
 | SiteMesh cu | Cau hinh SiteMesh rieng cho Spring Boot 4 |
 
+## Giai đoạn 3B - OTP email
+
+- Đã đọc: `OtpService`, `AccountOtpDao`, `RegisterController`, `VerifyEmailController`, `ForgotPasswordController` và các JSP OTP của dự án cũ. Luồng cũ dùng OTP 6 chữ số từ `SecureRandom`, hết hạn sau 5 phút, cooldown gửi lại 60 giây, giới hạn 5 lần sai và OTP chỉ dùng một lần.
+- `account_otps` JDBC cũ được thay bằng Entity JPA `EmailOtp`, `EmailOtpRepository`, `AccountOtpService` và enum `OtpPurpose` (`VERIFY_EMAIL`, `RESET_PASSWORD`). Mã OTP ở dự án mới được BCrypt trước khi lưu.
+- SMTP JavaMail trực tiếp cũ được thay bằng `SpringOtpMailService` dùng Spring Mail/`JavaMailSender`. Tên người gửi là `KHANGGEAR`; cấu hình lấy từ biến môi trường, không sao chép cấu hình Tomcat hoặc secret cũ.
+- Tomcat cũ có `setenv.bat` tại đường dẫn đã cung cấp và khai báo nhóm `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, `SMTP_FROM`, `SMTP_STARTTLS`. Dự án mới chuẩn hóa sang `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_FROM_NAME`, `MAIL_STARTTLS`; khi chạy ngoài Tomcat phải export các biến này vào shell/IDE.
+
 ## Dieu chinh o du an moi
 
 - Giai doan 1 chua tao entity, repository, CRUD, Security hoac decorator.

@@ -37,3 +37,22 @@ IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_categories_name' AND 
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_users_username' AND object_id = OBJECT_ID(N'dbo.users')) CREATE INDEX IX_users_username ON dbo.users(username);
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_users_email' AND object_id = OBJECT_ID(N'dbo.users')) CREATE INDEX IX_users_email ON dbo.users(email);
 GO
+IF OBJECT_ID(N'dbo.email_otps', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.email_otps (
+        id BIGINT IDENTITY(1,1) NOT NULL CONSTRAINT PK_email_otps PRIMARY KEY,
+        user_id BIGINT NOT NULL,
+        email VARCHAR(254) NOT NULL,
+        purpose VARCHAR(20) NOT NULL,
+        code_hash VARCHAR(100) NOT NULL,
+        expires_at DATETIME2 NOT NULL,
+        created_at DATETIME2 NOT NULL CONSTRAINT DF_email_otps_created_at DEFAULT SYSUTCDATETIME(),
+        consumed_at DATETIME2 NULL,
+        attempt_count INT NOT NULL CONSTRAINT DF_email_otps_attempt_count DEFAULT 0,
+        last_sent_at DATETIME2 NOT NULL,
+        CONSTRAINT FK_email_otps_users FOREIGN KEY (user_id) REFERENCES dbo.users(id),
+        CONSTRAINT CK_email_otps_purpose CHECK (purpose IN ('VERIFY_EMAIL', 'RESET_PASSWORD'))
+    );
+END;
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_email_otps_user_purpose' AND object_id = OBJECT_ID(N'dbo.email_otps')) CREATE INDEX IX_email_otps_user_purpose ON dbo.email_otps(user_id, purpose, created_at DESC);
+GO

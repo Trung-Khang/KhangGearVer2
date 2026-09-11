@@ -56,6 +56,11 @@ class SecurityIntegrationTests {
         mockMvc.perform(get("/login"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("auth/login"));
+        mockMvc.perform(get("/register"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("auth/register"));
+        mockMvc.perform(post("/register"))
+                .andExpect(status().isForbidden());
         mockMvc.perform(get("/admin"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/login"));

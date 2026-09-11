@@ -47,3 +47,10 @@ mvn clean test
 mvn clean package
 java -jar target/khanggear-ver2.war --spring.profiles.active=security-test --server.port=8182
 ```
+
+## Giai đoạn 3B: OTP email
+
+- Đăng ký tạo tài khoản `CUSTOMER` active nhưng chưa xác minh email; đăng nhập chỉ được phép sau khi OTP hợp lệ.
+- Quên mật khẩu dùng OTP một lần, có thời hạn 5 phút, tối đa 5 lần sai và cooldown gửi lại 60 giây. Reset được xác nhận bằng session ngắn hạn, không dùng OTP trong URL hoặc localStorage.
+- Cấu hình mail qua biến môi trường: `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_FROM_NAME`, `MAIL_STARTTLS`. Không commit các giá trị này.
+- External Tomcat chỉ nạp biến trong `setenv.bat` khi Tomcat khởi động. Với `mvn spring-boot:run` hoặc `java -jar`, hãy khai báo các biến trên trong PowerShell/IDE trước khi chạy.
