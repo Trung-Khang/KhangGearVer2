@@ -1,0 +1,5 @@
+IF DB_ID(N'KhangGearVer2DB') IS NULL
+BEGIN
+    CREATE DATABASE KhangGearVer2DB;
+END;
+GO
