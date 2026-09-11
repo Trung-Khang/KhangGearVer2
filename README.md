@@ -29,4 +29,8 @@ WAR duoc tao tai `target/khanggear-ver2.war`.
 
 ### Trang thai
 
-Giai doan 1 chi dung skeleton va JSP kiem tra tai `/`. Profile mac dinh `foundation` khong ket noi SQL Server va chua bat Spring Security de khoi dong duoc khong can cau hinh may ca nhan. Chua trien khai entity, repository, CRUD Category/User, Security, upload, SiteMesh decorator, SQL Server that hay storefront.
+Giai doan 2 da co Entity `Category`, `User`, enum role, Spring Data repository va service co quy tac nghiep vu. Database rieng la `KhangGearVer2DB`; cau hinh production doc `SQLSERVER_URL`, `SQLSERVER_USERNAME`, `SQLSERVER_PASSWORD`, va dung `ddl-auto=validate`.
+
+Chay `sql/create-database.sql`, sau do `sql/schema.sql` va `sql/seed.sql` bang SQL Server. Profile `foundation` chi de kiem tra JSP khong ket noi database; profile `test` dung H2 trong bo nho, khong dai dien hoan toan cho SQL Server.
+
+Chua trien khai Spring Security thuc te, CRUD controller/JSP, SiteMesh decorator, upload hay storefront.
