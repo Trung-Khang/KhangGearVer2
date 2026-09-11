@@ -80,3 +80,13 @@ Chưa có CRUD controller/JSP, SiteMesh decorator/Bootstrap admin template đầ
 - Da them `.env.local.example` chi chua placeholder cho `SQLSERVER_URL`, `SQLSERVER_USERNAME`, `SQLSERVER_PASSWORD` va `MAIL_*`. File `.env.local` bi Git ignore; credential khong nam trong launch configuration, README hay bao cao.
 - Smoke test WAR voi profile `security-test` tren embedded Tomcat da tra HTTP 200 va HTML khac rong cho `/khanggear-ver2/login`, `/khanggear-ver2/register` va `/khanggear-ver2/forgot-password`. Profile nay dung H2 de kiem tra JSP/runtime, khong gui Gmail that.
 - SQL Server/Gmail that qua external Tomcat chua the kiem thu tiep cho den khi nguoi van hanh khai bao ba bien `SQLSERVER_*` trong runtime cua Tomcat cho database rieng `KhangGearVer2DB` va restart dung instance Tomcat.
+
+## Bo sung 3C - Sua cau hinh VS Code Run and Debug
+
+- `KhangGearVer2Application` dung package dung theo source layout, co `public static void main(String[] args)` va Maven da compile thanh `target/classes/vn/edu/hcmute/khanggearver2/KhangGearVer2Application.class`.
+- Da bo `projectName` vi truong nay co the khong trung ten module ma Java Language Server nhan dien; Java Debugger se tu chon Maven project theo `mainClass`. Nguyen nhan da tai hien ben ngoai VS Code la classpath cua process fork bi loi encoding o duong dan Unicode tren Windows.
+- `args` duoc doi sang mang tham so hop le cua Java Debugger; van giu port `8081`, context `/khanggear-ver2` va nap `.env.local` qua Spring Boot. Khong co credential trong launch configuration.
+- Da kiem tra `.env.local` chi theo ten bien: cac bien `SQLSERVER_*` va `MAIL_*` can thiet deu co va file dang bi Git ignore. Khong doc hay ghi gia tri nhay cam.
+- `mvn spring-boot:run` tai duong dan repository goc da tai hien `ClassNotFoundException`; debug classpath cho thay doan duong dan Unicode bi bien dang trong process fork. Chay cung lenh qua junction ASCII local `D:\KhangGearVer2-local` da vao duoc `KhangGearVer2Application.main`, nen loi main class da duoc phan loai la classpath/encoding cua launcher tren Windows, khong phai loi package hay compile.
+- Sau khi main class chay duoc, runtime dung o loi moi `Unable to determine Dialect without JDBC metadata`. `.env.local` da duoc nap va co dung ten bien, nhung ket noi SQL Server chua thanh cong hoac URL khong hop le. Khong doc, sua hay log gia tri credential; can kiem tra gia tri SQL Server tren may local truoc khi co the smoke test HTTP production.
+- Smoke test tách biệt voi `security-test` qua junction da khoi dong embedded Tomcat tren `8081`; `/khanggear-ver2/login`, `/register` va `/forgot-password` deu tra HTTP 200 voi HTML khac rong. H2 chi duoc dung de xac minh main class/JSP sau sua launcher, khong thay the kiem thu SQL Server production.

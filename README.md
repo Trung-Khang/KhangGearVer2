@@ -64,6 +64,10 @@ java -jar target/khanggear-ver2.war --spring.profiles.active=security-test --ser
 
 Cau hinh `.vscode/launch.json` dung `spring.config.additional-location` de Spring Boot doc file `.env.local` theo dinh dang properties. Cach nay khong can dua credential vao VS Code launch configuration.
 
+Neu VS Code bao khong tim thay main class, cau hinh chay khong gan `projectName`: Java Debugger tu chon Maven module chua `KhangGearVer2Application`. Mo dung thu muc goc `KhangGearVer2`, chay `Java: Clean Java Language Server Workspace` neu can, cho Maven load xong roi chon cau hinh Run and Debug.
+
+Tren Windows, Maven launcher co the mat classpath neu repository nam trong duong dan co ky tu Unicode. Da tao junction local `D:\KhangGearVer2-local` tro den repository nay de kiem tra. Neu gap lai `ClassNotFoundException`, mo `D:\KhangGearVer2-local` bang VS Code, reload Maven/Java Language Server, roi dung cung cau hinh Run and Debug. Junction nay la cau hinh may local, khong nam trong Git va khong thay doi source repository.
+
 ## External Tomcat
 
 WAR `target/khanggear-ver2.war` chi deploy voi context `/khanggear-ver2`, khong doi ten thanh `dangnhap.war`. External Tomcat can co `SQLSERVER_URL`, `SQLSERVER_USERNAME`, `SQLSERVER_PASSWORD` trong runtime; code van tuong thich fallback `SMTP_*` cu cho mail.
