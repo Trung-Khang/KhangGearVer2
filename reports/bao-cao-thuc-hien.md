@@ -39,3 +39,29 @@ Chưa có CRUD controller/JSP, SiteMesh decorator/Bootstrap admin template đầ
 - Mail dùng Spring Mail/JavaMailSender, HTML UTF-8, nhận diện KHANGGEAR và hai nội dung riêng cho xác minh email/đặt lại mật khẩu. Không ghi OTP, mật khẩu hay SMTP secret vào log.
 - Đã đọc các service/controller/JSP OTP của dự án cũ để mapping; không sửa dự án cũ. `setenv.bat` Tomcat được kiểm tra theo tên biến, không đọc hoặc ghi giá trị nhạy cảm.
 - Kiểm thử Gmail/SQL Server/Tomcat thật sẽ chỉ được ghi nhận sau khi có cấu hình runtime cho dự án mới; test tự động dùng H2 và mock mail, không gửi email thật.
+
+# Bao cao Giai doan 3C - Kiem thu SQL Server, Gmail va Tomcat
+
+## Ket qua SQL Server
+
+- SQL Server Express dang chay va ket noi Windows Authentication chi-doc thanh cong.
+- Da tao idempotent database rieng `KhangGearVer2DB` bang `sql/create-database.sql`, sau do chay `sql/schema.sql`. Khong drop database, bang hay du lieu va khong ghi vao database cua ung dung cu.
+- Da xac nhan schema co `users`, `categories`, `email_otps`; `users` co `active`, `email_verified`, `role`; OTP co user, purpose, hash, expiry, consumed, attempts va last-sent.
+
+## Tomcat va HTTP
+
+- External Tomcat dung tai `C:\\apache-tomcat-11.0.25`; context cu `/dangnhap` da duoc kiem tra HTTP 200 truoc va sau deploy.
+- Da deploy rieng `khanggear-ver2.war`, khong thay the `dangnhap.war`.
+- Phat hien WAR Spring Boot thieu `SpringBootServletInitializer.configure`, lam context moi tra 404. Da sua trong commit `12e5d23` va them regression test cho bootstrap external Tomcat.
+- Sau sua, log xac nhan Spring Web initializer da chay. Context moi chua khoi dong vi datasource production chua nhan duoc JDBC URL/credential, nen `/khanggear-ver2/login` chua the tra HTML.
+
+## SMTP va phan con thieu
+
+- `setenv.bat` ton tai va co nhom bien `SMTP_*`; khong co `MAIL_*` hay `SQLSERVER_*` duoc phat hien. Gia tri nhay cam khong duoc doc, ghi log hay dua vao repository.
+- Gmail OTP that chua the kiem thu vi context moi bi chan o datasource truoc khi vao form. Khong gui email, khong tao OTP that va khong xu ly email ca nhan.
+- Can cau hinh runtime cho Tomcat bang `SQLSERVER_URL`, `SQLSERVER_USERNAME`, `SQLSERVER_PASSWORD` cua database `KhangGearVer2DB`, sau do restart Tomcat. `MAIL_*` hoac `SMTP_*` da duoc code ho tro de kiem thu Gmail.
+
+## Build
+
+- `mvn clean test`: pass 17/17.
+- `mvn clean package`: pass, tao `target/khanggear-ver2.war`.
