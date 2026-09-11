@@ -54,3 +54,16 @@ java -jar target/khanggear-ver2.war --spring.profiles.active=security-test --ser
 - Quên mật khẩu dùng OTP một lần, có thời hạn 5 phút, tối đa 5 lần sai và cooldown gửi lại 60 giây. Reset được xác nhận bằng session ngắn hạn, không dùng OTP trong URL hoặc localStorage.
 - Cấu hình mail qua biến môi trường: `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_FROM_NAME`, `MAIL_STARTTLS`. Không commit các giá trị này.
 - External Tomcat chỉ nạp biến trong `setenv.bat` khi Tomcat khởi động. Với `mvn spring-boot:run` hoặc `java -jar`, hãy khai báo các biến trên trong PowerShell/IDE trước khi chạy.
+
+## Chay local bang VS Code
+
+1. Tao file local: `Copy-Item .env.local.example .env.local`.
+2. Tu dien `SQLSERVER_URL`, `SQLSERVER_USERNAME`, `SQLSERVER_PASSWORD` cho database rieng `KhangGearVer2DB`, va cac bien `MAIL_*` tren may. Khong commit `.env.local`.
+3. Mo Run and Debug trong VS Code, chon `Run KhangGearVer2 (local SQL + Gmail)`, sau do bam nut chay.
+4. Embedded Tomcat chay doc lap tai `http://localhost:8081/khanggear-ver2/login`. Ung dung cu external Tomcat van dung cong `8080`.
+
+Cau hinh `.vscode/launch.json` dung `spring.config.additional-location` de Spring Boot doc file `.env.local` theo dinh dang properties. Cach nay khong can dua credential vao VS Code launch configuration.
+
+## External Tomcat
+
+WAR `target/khanggear-ver2.war` chi deploy voi context `/khanggear-ver2`, khong doi ten thanh `dangnhap.war`. External Tomcat can co `SQLSERVER_URL`, `SQLSERVER_USERNAME`, `SQLSERVER_PASSWORD` trong runtime; code van tuong thich fallback `SMTP_*` cu cho mail.

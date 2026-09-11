@@ -1,0 +1,14 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Run KhangGearVer2 (local SQL + Gmail)",
+      "request": "launch",
+      "mainClass": "vn.edu.hcmute.khanggearver2.KhangGearVer2Application",
+      "projectName": "khanggear-ver2",
+      "cwd": "${workspaceFolder}",
+      "args": "--server.port=8081 --server.servlet.context-path=/khanggear-ver2 --spring.config.additional-location=optional:file:./.env.local[.properties]"
+    }
+  ]
+}

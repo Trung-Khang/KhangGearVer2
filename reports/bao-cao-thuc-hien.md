@@ -65,3 +65,18 @@ Chưa có CRUD controller/JSP, SiteMesh decorator/Bootstrap admin template đầ
 
 - `mvn clean test`: pass 17/17.
 - `mvn clean package`: pass, tao `target/khanggear-ver2.war`.
+
+## Bo sung 3C - Cau hinh runtime local va chan doan Tomcat
+
+### Nguyen nhan external Tomcat khong phuc vu duoc ung dung moi
+
+- Log cho thay context `khanggear-ver2` dung o khoi tao datasource do runtime cua external Tomcat chua co `SQLSERVER_URL`, `SQLSERVER_USERNAME`, `SQLSERVER_PASSWORD`. Hibernate khong lay duoc JDBC metadata nen khong the khoi tao dialect; day la blocker cua ung dung moi.
+- Mot lan khoi dong Tomcat khac that bai do cong `8080` va shutdown port `8005` dang duoc Tomcat dang chay su dung. Log sau do ghi nhan lenh shutdown hop le; khong co bang chung Community Server Connector lam Tomcat crash.
+- Cac canh bao `--add-opens` va canh bao cleanup JDBC xuat hien luc Tomcat dung, khong phai nguyen nhan goc. Deployment chi co `khanggear-ver2.war`; ung dung cu `dangnhap` khong bi thay the.
+
+### Chay local an toan
+
+- Da them `.vscode/launch.json` voi cau hinh `Run KhangGearVer2 (local SQL + Gmail)`. Cau hinh chay main class Spring Boot tren cong `8081`, context `/khanggear-ver2`, va doc properties tu `.env.local` qua `spring.config.additional-location`.
+- Da them `.env.local.example` chi chua placeholder cho `SQLSERVER_URL`, `SQLSERVER_USERNAME`, `SQLSERVER_PASSWORD` va `MAIL_*`. File `.env.local` bi Git ignore; credential khong nam trong launch configuration, README hay bao cao.
+- Smoke test WAR voi profile `security-test` tren embedded Tomcat da tra HTTP 200 va HTML khac rong cho `/khanggear-ver2/login`, `/khanggear-ver2/register` va `/khanggear-ver2/forgot-password`. Profile nay dung H2 de kiem tra JSP/runtime, khong gui Gmail that.
+- SQL Server/Gmail that qua external Tomcat chua the kiem thu tiep cho den khi nguoi van hanh khai bao ba bien `SQLSERVER_*` trong runtime cua Tomcat cho database rieng `KhangGearVer2DB` va restart dung instance Tomcat.
