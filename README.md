@@ -33,4 +33,17 @@ Giai doan 2 da co Entity `Category`, `User`, enum role, Spring Data repository v
 
 Chay `sql/create-database.sql`, sau do `sql/schema.sql` va `sql/seed.sql` bang SQL Server. Profile `foundation` chi de kiem tra JSP khong ket noi database; profile `test` dung H2 trong bo nho, khong dai dien hoan toan cho SQL Server.
 
-Chua trien khai Spring Security thuc te, CRUD controller/JSP, SiteMesh decorator, upload hay storefront.
+## Giai đoạn 3: Đăng nhập và phân quyền
+
+- Spring Security dùng `CustomUserDetailsService` truy vấn `users.username` không phân biệt hoa thường và kiểm tra mật khẩu BCrypt.
+- Chỉ tài khoản `active=true` và `emailVerified=true` mới đăng nhập được. Role được ánh xạ thành `ROLE_ADMIN`, `ROLE_MANAGER`, `ROLE_CUSTOMER`; riêng `/admin/**` chỉ cho ADMIN.
+- Có JSP `/login`, dashboard `/admin`, trang `/403`, CSRF mặc định và logout bằng POST. CRUD Category/User, SiteMesh Bootstrap và storefront vẫn chưa được triển khai trong repository mới.
+- Profile `security-test` dùng H2 trong bộ nhớ để chạy WAR kiểm tra độc lập; chỉ có dữ liệu demo với BCrypt hash, không chứa mật khẩu hoặc SQL Server secret.
+
+Chạy kiểm tra Security không cần SQL Server:
+
+```bash
+mvn clean test
+mvn clean package
+java -jar target/khanggear-ver2.war --spring.profiles.active=security-test --server.port=8182
+```
