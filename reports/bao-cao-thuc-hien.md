@@ -79,6 +79,29 @@ Chưa có CRUD controller/JSP, SiteMesh decorator/Bootstrap admin template đầ
 - Da them `.vscode/launch.json` voi cau hinh `Run KhangGearVer2 (local SQL + Gmail)`. Cau hinh chay main class Spring Boot tren cong `8081`, context `/khanggear-ver2`, va doc properties tu `.env.local` qua `spring.config.additional-location`.
 - Da them `.env.local.example` chi chua placeholder cho `SQLSERVER_URL`, `SQLSERVER_USERNAME`, `SQLSERVER_PASSWORD` va `MAIL_*`. File `.env.local` bi Git ignore; credential khong nam trong launch configuration, README hay bao cao.
 - Smoke test WAR voi profile `security-test` tren embedded Tomcat da tra HTTP 200 va HTML khac rong cho `/khanggear-ver2/login`, `/khanggear-ver2/register` va `/khanggear-ver2/forgot-password`. Profile nay dung H2 de kiem tra JSP/runtime, khong gui Gmail that.
+
+# Bo sung 3C - Khoi phuc dang ky va reset mat khau
+
+## Nguyen nhan va pham vi sua
+
+- Form login thieu lien ket den dang ky va quen mat khau; cac JSP auth duoc chuan hoa lai UTF-8 va them URL theo context path.
+- Luong reset mat khau truoc do xac minh OTP theo giao dich rieng roi tiep tuc cap nhat mat khau bang trang thai khong duoc rang buoc voi OTP. Luong moi giu ID OTP da xac minh trong session ngan han va cap nhat mat khau + danh dau OTP da dung trong cung mot giao dich.
+- Khong luu OTP plaintext, khong dua OTP vao URL/localStorage va khong ghi password/OTP/SMTP secret vao log.
+
+## File va luong da cap nhat
+
+- `AccountController`: dang ky tao CUSTOMER, chuyen sang trang OTP, gui lai OTP, forgot password tra thong bao chung, xac minh OTP reset va PRG ve login sau khi doi mat khau.
+- `AccountOtpService`, `OtpChallengeResult`, `EmailOtp`: OTP reset khong bi consume som; cap nhat BCrypt va consume OTP atomically. Cooldown 60 giay, het han 5 phut, toi da 5 lan sai van duoc giu.
+- `SpringOtpMailService`: tieu de/noi dung HTML UTF-8 hien thi dung ten KHANGGEAR va phan biet xac minh email/doi mat khau.
+- `CustomUserDetailsService`: thong bao loi dang nhap, khoa tai khoan va email chua xac minh duoc chuan hoa UTF-8.
+- JSP auth: `login.jsp`, `register.jsp`, `verify-email.jsp`, `forgot-password.jsp`, `reset-password-verify.jsp`, `reset-password.jsp`; form giu CSRF va du lieu hop le da nhap.
+
+## Kiem thu
+
+- `mvn clean test`: 18/18 test pass, bao gom test OTP reset giu OTP cho den khi cap nhat mat khau thanh cong va BCrypt password moi.
+- `mvn package`: pass, tao `target/khanggear-ver2.war`.
+- WAR chay bang profile `security-test` tren port 8081, context `/khanggear-ver2`; `/login`, `/register`, `/forgot-password` tra HTTP 200 va HTML khac rong. `/verify-email` va `/reset-password/verify` redirect dung khi chua co session OTP.
+- Chua gui Gmail that trong smoke test; runtime test dung H2 va mail mock, khong phat tan credential.
 - SQL Server/Gmail that qua external Tomcat chua the kiem thu tiep cho den khi nguoi van hanh khai bao ba bien `SQLSERVER_*` trong runtime cua Tomcat cho database rieng `KhangGearVer2DB` va restart dung instance Tomcat.
 
 ## Bo sung 3C - Sua cau hinh VS Code Run and Debug

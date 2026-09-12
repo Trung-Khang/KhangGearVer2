@@ -70,4 +70,11 @@ Tren Windows, Maven launcher co the mat classpath neu repository nam trong duong
 
 ## External Tomcat
 
+## Bo sung: dang ky va khoi phuc mat khau
+
+- Dang ky tao tai khoan `CUSTOMER` o trang thai chua xac minh; OTP xac minh duoc gui qua Spring Mail va co the gui lai theo cooldown.
+- Quen mat khau dung OTP 6 chu so, luu hash, het han 5 phut, gioi han so lan thu va chi dung mot lan. Mat khau moi duoc BCrypt trong giao dich cap nhat.
+- Cac bien moi truong mail duoc ho tro: `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_FROM_NAME`, `MAIL_STARTTLS`. Chi dung placeholder trong repository, khong commit secret.
+- Cac route JSP: `/register`, `/verify-email`, `/forgot-password`, `/reset-password/verify`, `/reset-password`.
+
 WAR `target/khanggear-ver2.war` chi deploy voi context `/khanggear-ver2`, khong doi ten thanh `dangnhap.war`. External Tomcat can co `SQLSERVER_URL`, `SQLSERVER_USERNAME`, `SQLSERVER_PASSWORD` trong runtime; code van tuong thich fallback `SMTP_*` cu cho mail.

@@ -17,6 +17,7 @@ public class EmailOtp {
     @Column(name = "attempt_count", nullable = false) private int attemptCount;
     @Column(name = "last_sent_at", nullable = false) private LocalDateTime lastSentAt;
     public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
     public User getUser() { return user; } public void setUser(User user) { this.user = user; }
     public String getEmail() { return email; } public void setEmail(String email) { this.email = email; }
     public OtpPurpose getPurpose() { return purpose; } public void setPurpose(OtpPurpose purpose) { this.purpose = purpose; }
