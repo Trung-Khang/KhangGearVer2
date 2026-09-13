@@ -8,3 +8,4 @@ target/
 .env
 .env.local
 application-local.properties
+reports/
