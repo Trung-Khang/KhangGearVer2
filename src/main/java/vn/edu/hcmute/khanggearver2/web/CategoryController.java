@@ -38,18 +38,22 @@ public class CategoryController {
     }
     @GetMapping("/add") String add(Model model) { if (!model.containsAttribute("category")) model.addAttribute("category", new Category()); return "admin/category/add"; }
     @PostMapping("/add")
-    String add(@RequestParam String name, @RequestParam(required = false) String description, @RequestParam(required = false) MultipartFile icon, Model model, RedirectAttributes flash) {
+    String add(@RequestParam(required = false) String name, @RequestParam(required = false) String description, @RequestParam(required = false) MultipartFile icon, Model model, RedirectAttributes flash) {
         Category category = category(name, description); String error = validateIcon(icon); if (error != null) return addError(model, category, error);
-        try { category.setIcon(store(icon)); categories.create(category); flash.addFlashAttribute("message", "Thêm danh mục thành công."); }
-        catch (RuntimeException | IOException exception) { model.addAttribute("error", message(exception, "Không thể thêm danh mục.")); model.addAttribute("category", category); return "admin/category/add"; }
+        if (name == null || name.trim().isEmpty()) return addError(model, category, "Tên danh mục là bắt buộc.");
+        String storedIcon = null;
+        try { storedIcon = store(icon); category.setIcon(storedIcon); categories.create(category); flash.addFlashAttribute("message", "Thêm danh mục thành công."); }
+        catch (RuntimeException | IOException exception) { deleteStoredIcon(storedIcon); model.addAttribute("error", message(exception, "Không thể thêm danh mục.")); model.addAttribute("category", category); return "admin/category/add"; }
         return "redirect:/admin/category/list";
     }
     @GetMapping("/edit") String edit(@RequestParam Long id, Model model) { model.addAttribute("category", categories.getById(id)); return "admin/category/edit"; }
     @PostMapping("/edit")
-    String edit(@RequestParam Long id, @RequestParam String name, @RequestParam(required = false) String description, @RequestParam(required = false) MultipartFile icon, Model model, RedirectAttributes flash) {
+    String edit(@RequestParam Long id, @RequestParam(required = false) String name, @RequestParam(required = false) String description, @RequestParam(required = false) MultipartFile icon, Model model, RedirectAttributes flash) {
         Category input = category(name, description); String error = validateIcon(icon); if (error != null) return editError(model, id, input, error);
-        try { Category current = categories.getById(id); input.setIcon(icon != null && !icon.isEmpty() ? store(icon) : current.getIcon()); categories.update(id, input); flash.addFlashAttribute("message", "Cập nhật danh mục thành công."); }
-        catch (RuntimeException | IOException exception) { model.addAttribute("error", message(exception, "Không thể cập nhật danh mục.")); model.addAttribute("category", input); model.addAttribute("id", id); return "admin/category/edit"; }
+        if (name == null || name.trim().isEmpty()) return editError(model, id, input, "Tên danh mục là bắt buộc.");
+        String storedIcon = null;
+        try { Category current = categories.getById(id); storedIcon = icon != null && !icon.isEmpty() ? store(icon) : null; input.setIcon(storedIcon != null ? storedIcon : current.getIcon()); categories.update(id, input); flash.addFlashAttribute("message", "Cập nhật danh mục thành công."); }
+        catch (RuntimeException | IOException exception) { deleteStoredIcon(storedIcon); model.addAttribute("error", message(exception, "Không thể cập nhật danh mục.")); model.addAttribute("category", input); model.addAttribute("id", id); return "admin/category/edit"; }
         return "redirect:/admin/category/list";
     }
     @PostMapping("/delete")
@@ -75,6 +79,10 @@ public class CategoryController {
     private String store(MultipartFile file) throws IOException {
         Files.createDirectories(uploadRoot); String original = file.getOriginalFilename(); String extension = original.substring(original.lastIndexOf('.')).toLowerCase(Locale.ROOT);
         String filename = java.util.UUID.randomUUID() + extension; Path target = uploadRoot.resolve(filename).normalize(); if (!target.getParent().equals(uploadRoot)) throw new IOException("Invalid upload path"); Files.write(target, file.getBytes()); return filename;
+    }
+    private void deleteStoredIcon(String filename) {
+        if (filename == null || filename.isBlank()) return;
+        try { Files.deleteIfExists(uploadRoot.resolve(filename).normalize()); } catch (IOException ignored) { }
     }
     private String message(Exception exception, String fallback) { return exception instanceof DuplicateResourceException ? "Tên danh mục đã tồn tại." : fallback; }
 }

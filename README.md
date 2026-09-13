@@ -84,3 +84,10 @@ Tren Windows, Maven launcher co the mat classpath neu repository nam trong duong
 - Migration `sql/schema.sql` bo sung cot `icon` theo cach idempotent. Product/User/Order va cac luong account/OTP khong thay doi.
 
 WAR `target/khanggear-ver2.war` chi deploy voi context `/khanggear-ver2`, khong doi ten thanh `dangnhap.war`. External Tomcat can co `SQLSERVER_URL`, `SQLSERVER_USERNAME`, `SQLSERVER_PASSWORD` trong runtime; code van tuong thich fallback `SMTP_*` cu cho mail.
+
+## Xac minh Category tren SQL Server
+
+- Da doi chieu `Category` JPA voi `dbo.categories`: cac cot `id`, `name`, `description`, `active`, `created_at`, `updated_at` va `icon` khop schema hien tai.
+- Migration `sql/schema.sql` cho `icon` la idempotent; khong drop bang va khong xoa du lieu.
+- Runtime local co the ket noi `KhangGearVer2DB` qua cau hinh `.env.local` duoc nap bang `optional:file:./.env.local[.properties]`. Khong dua gia tri nhay cam vao Git.
+- Category CRUD su dung PRG, CSRF, validation server-side va upload icon an toan.

@@ -134,3 +134,25 @@ Project da co entity, repository va service JPA cho Category nhung chua co contr
 - `mvn spring-boot:run` tai duong dan repository goc da tai hien `ClassNotFoundException`; debug classpath cho thay doan duong dan Unicode bi bien dang trong process fork. Chay cung lenh qua junction ASCII local `D:\KhangGearVer2-local` da vao duoc `KhangGearVer2Application.main`, nen loi main class da duoc phan loai la classpath/encoding cua launcher tren Windows, khong phai loi package hay compile.
 - Sau khi main class chay duoc, runtime dung o loi moi `Unable to determine Dialect without JDBC metadata`. `.env.local` da duoc nap va co dung ten bien, nhung ket noi SQL Server chua thanh cong hoac URL khong hop le. Khong doc, sua hay log gia tri credential; can kiem tra gia tri SQL Server tren may local truoc khi co the smoke test HTTP production.
 - Smoke test tách biệt voi `security-test` qua junction da khoi dong embedded Tomcat tren `8081`; `/khanggear-ver2/login`, `/register` va `/forgot-password` deu tra HTTP 200 voi HTML khac rong. H2 chi duoc dung de xac minh main class/JSP sau sua launcher, khong thay the kiem thu SQL Server production.
+
+# Bo sung - Chan doan Category 4A tren SQL Server
+
+## Nguyen nhan goc da xac minh
+
+- Stack trace Tomcat moi nhat truoc khi sua khong phai loi JSP Category. Ung dung `khanggear-ver2` dung ngay luc khoi tao `EntityManagerFactory` voi loi Hibernate `Unable to determine Dialect without JDBC metadata`, do external Tomcat khong co datasource SQL Server hop le trong runtime. Vi vay Tomcat khong tao context ung dung de phuc vu `/admin/category/list`.
+- Kiem tra SQL Server bang Windows Authentication voi `sqlcmd -S . -E -d KhangGearVer2DB` thanh cong. Bang `dbo.categories` da co cot `icon`, va cac cot entity Category khop ten/loai du lieu. Database hien tai chua co bang `products`, nen chua co FK Product-Category de kiem thu rang buoc xoa.
+
+## Phan sua source
+
+- Loai bo dong migration `icon` trung lap trong `sql/schema.sql`, giu lai mot lenh `COL_LENGTH` idempotent.
+- `CategoryController` nhan tham so ten tuy chon de tu hien thi loi tieng Viet thay vi de request rong bi 400; validation ten rong dien ra truoc khi ghi file.
+- Khi create/update bi tu choi sau upload, file UUID vua tao duoc xoa; khi edit khong chon file moi thi icon cu duoc giu nguyen.
+- Bo phan test MVC khong tuong thich voi Spring Boot 4.1.1 da duoc go bo, khong them dependency test khong duoc su dung.
+
+## Kiem thu thuc te
+
+- `mvn clean test`: pass 18/18.
+- `mvn clean package`: pass, tao `target/khanggear-ver2.war`.
+- WAR da duoc khoi dong voi cau hinh `.env.local` tren embedded Tomcat port 8083 va ket noi thanh cong `KhangGearVer2DB`; log Hibernate xac nhan `SQLServerDialect`, database `KhangGearVer2DB` va JPA EntityManagerFactory khoi tao thanh cong.
+- Request anonymous den `/admin/category/list` tra redirect 302 ve `/login`, dung voi policy Spring Security. Chua thuc hien duoc browser CRUD voi tai khoan ADMIN that trong phien nay vi chua co credential dang nhap duoc xac minh; khong danh dau cac thao tac add/edit/delete/upload la da pass.
+- External Tomcat port 8080 van chua duoc dung de kiem thu browser trong phien nay. Khong co loi trang Category moi nao duoc xac nhan sau khi context SQL Server khoi dong embedded; can deploy WAR/restart dung instance Tomcat de kiem thu UI ADMIN day du.
