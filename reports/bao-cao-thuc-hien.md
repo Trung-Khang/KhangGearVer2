@@ -102,6 +102,27 @@ Chưa có CRUD controller/JSP, SiteMesh decorator/Bootstrap admin template đầ
 - `mvn package`: pass, tao `target/khanggear-ver2.war`.
 - WAR chay bang profile `security-test` tren port 8081, context `/khanggear-ver2`; `/login`, `/register`, `/forgot-password` tra HTTP 200 va HTML khac rong. `/verify-email` va `/reset-password/verify` redirect dung khi chua co session OTP.
 - Chua gui Gmail that trong smoke test; runtime test dung H2 va mail mock, khong phat tan credential.
+
+# Giai doan 4A - CRUD Category
+
+## Hien trang truoc khi sua
+
+Project da co entity, repository va service JPA cho Category nhung chua co controller/JSP CRUD. Entity chua co truong icon; schema SQL Server chua co cot icon. Ham kiem tra trung cu dung truy van `contains`, co the tu choi nham ten gan giong.
+
+## Da trien khai
+
+- `CategoryController`: `GET/POST /admin/category/list`, `/admin/category/add`, `/admin/category/edit?id=...` va `POST /admin/category/delete`.
+- Ba JSP `admin/category/list.jsp`, `add.jsp`, `edit.jsp` dung Bootstrap, UTF-8, context path, CSRF, thong bao flash, validation va confirm truoc khi xoa.
+- Category JPA them `icon`; `CategoryRepository` kiem tra ten exact-ignore-case khi tao/sua; `CategoryServiceImpl` normalize trim, transaction va giu icon cu khi sua khong chon anh.
+- Icon chi nhan PNG/JPG/JPEG/WebP toi da 2 MB, dung UUID, chan path traversal va public qua `/media/categories/{filename}`. File nam ngoai WAR tai `uploads/categories`.
+- `sql/schema.sql` them cot `icon` idempotent bang `COL_LENGTH`; khong drop bang hoac xoa du lieu.
+- Dashboard admin co lien ket den Category list; Security van gioi han `/admin/**` cho ADMIN.
+
+## Kiem thu
+
+- `mvn clean test`: 18/18 pass, bao gom test trim/duplicate Category va cac regression Security/OTP/reset password.
+- `mvn clean package`: pass, tao WAR `target/khanggear-ver2.war`.
+- Da kiem tra source khong thay doi URL account/OTP va khong dua secret vao Git. SQL Server production va browser CRUD voi tai khoan that can duoc xac nhan them khi runtime co database.
 - SQL Server/Gmail that qua external Tomcat chua the kiem thu tiep cho den khi nguoi van hanh khai bao ba bien `SQLSERVER_*` trong runtime cua Tomcat cho database rieng `KhangGearVer2DB` va restart dung instance Tomcat.
 
 ## Bo sung 3C - Sua cau hinh VS Code Run and Debug

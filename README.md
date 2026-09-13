@@ -77,4 +77,10 @@ Tren Windows, Maven launcher co the mat classpath neu repository nam trong duong
 - Cac bien moi truong mail duoc ho tro: `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_FROM_NAME`, `MAIL_STARTTLS`. Chi dung placeholder trong repository, khong commit secret.
 - Cac route JSP: `/register`, `/verify-email`, `/forgot-password`, `/reset-password/verify`, `/reset-password`.
 
+## Giai doan 4A: CRUD Category
+
+- ADMIN co the xem, tim kiem, them, sua va xoa Category tai `/admin/category/list`; cac POST deu co CSRF va dung Post/Redirect/Get.
+- Ten Category duoc trim, bat buoc va khong trung khong phan biet hoa thuong. Icon nhan PNG/JPG/JPEG/WebP toi da 2 MB, ten file UUID va luu ngoai WAR trong `uploads/categories`.
+- Migration `sql/schema.sql` bo sung cot `icon` theo cach idempotent. Product/User/Order va cac luong account/OTP khong thay doi.
+
 WAR `target/khanggear-ver2.war` chi deploy voi context `/khanggear-ver2`, khong doi ten thanh `dangnhap.war`. External Tomcat can co `SQLSERVER_URL`, `SQLSERVER_USERNAME`, `SQLSERVER_PASSWORD` trong runtime; code van tuong thich fallback `SMTP_*` cu cho mail.

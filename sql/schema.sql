@@ -33,7 +33,9 @@ BEGIN
     );
 END;
 GO
+IF COL_LENGTH(N'dbo.categories', N'icon') IS NULL ALTER TABLE dbo.categories ADD icon NVARCHAR(255) NULL;
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_categories_name' AND object_id = OBJECT_ID(N'dbo.categories')) CREATE INDEX IX_categories_name ON dbo.categories(name);
+IF COL_LENGTH(N'dbo.categories', N'icon') IS NULL ALTER TABLE dbo.categories ADD icon NVARCHAR(255) NULL;
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_users_username' AND object_id = OBJECT_ID(N'dbo.users')) CREATE INDEX IX_users_username ON dbo.users(username);
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_users_email' AND object_id = OBJECT_ID(N'dbo.users')) CREATE INDEX IX_users_email ON dbo.users(email);
 GO
