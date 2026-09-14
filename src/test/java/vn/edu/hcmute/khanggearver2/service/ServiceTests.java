@@ -5,12 +5,16 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import java.util.Optional;
+import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import vn.edu.hcmute.khanggearver2.domain.Category;
+import vn.edu.hcmute.khanggearver2.domain.Order;
+import vn.edu.hcmute.khanggearver2.domain.OrderStatus;
+import vn.edu.hcmute.khanggearver2.domain.Product;
 import vn.edu.hcmute.khanggearver2.domain.Role;
 import vn.edu.hcmute.khanggearver2.domain.User;
 import vn.edu.hcmute.khanggearver2.exception.BusinessRuleException;
@@ -18,15 +22,23 @@ import vn.edu.hcmute.khanggearver2.exception.DuplicateResourceException;
 import vn.edu.hcmute.khanggearver2.exception.ResourceNotFoundException;
 import vn.edu.hcmute.khanggearver2.repository.CategoryRepository;
 import vn.edu.hcmute.khanggearver2.repository.EmailOtpRepository;
+import vn.edu.hcmute.khanggearver2.repository.OrderItemRepository;
+import vn.edu.hcmute.khanggearver2.repository.OrderRepository;
+import vn.edu.hcmute.khanggearver2.repository.ProductRepository;
 import vn.edu.hcmute.khanggearver2.repository.UserRepository;
 import vn.edu.hcmute.khanggearver2.service.impl.CategoryServiceImpl;
 import vn.edu.hcmute.khanggearver2.service.impl.UserServiceImpl;
+import vn.edu.hcmute.khanggearver2.service.impl.OrderServiceImpl;
+import vn.edu.hcmute.khanggearver2.service.impl.ProductServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
 class ServiceTests {
     @Mock CategoryRepository categories;
     @Mock UserRepository users;
     @Mock EmailOtpRepository emailOtps;
+    @Mock ProductRepository products;
+    @Mock OrderItemRepository orderItems;
+    @Mock OrderRepository orders;
 
     @Test void categoryCreatesTrimmedAndRejectsDuplicates() {
         CategoryService service = new CategoryServiceImpl(categories); Category input = new Category(); input.setName("  Laptop  ");
@@ -39,5 +51,8 @@ class ServiceTests {
     @Test void userHashesOnCreateAndKeepsHashOnBlankUpdate() { BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(); UserService service = new UserServiceImpl(users, encoder, emailOtps); User input = user("  Lan ", " LAN@EXAMPLE.COM "); input.setPassword("secret123"); when(users.findByUsernameIgnoreCase(any())).thenReturn(Optional.empty()); when(users.findByEmailIgnoreCase(any())).thenReturn(Optional.empty()); when(users.save(any())).thenAnswer(i -> i.getArgument(0)); User created = service.create(input); assertThat(created.getUsername()).isEqualTo("lan"); assertThat(encoder.matches("secret123", created.getPassword())).isTrue(); User stored = user("lan", "lan@example.com"); stored.setId(3L); stored.setPassword(created.getPassword()); when(users.findById(3L)).thenReturn(Optional.of(stored)); User edit = user("lan", "lan@example.com"); edit.setPassword(" "); service.update(3L, edit, 9L); assertThat(stored.getPassword()).isEqualTo(created.getPassword()); }
     @Test void userRejectsDuplicateAndProtectsSelfAndLastAdmin() { UserService service = new UserServiceImpl(users, new BCryptPasswordEncoder(), emailOtps); User duplicate = user("lan", "lan@example.com"); duplicate.setPassword("secret123"); User existing = user("lan", "other@example.com"); existing.setId(4L); when(users.findByUsernameIgnoreCase("lan")).thenReturn(Optional.of(existing)); assertThatThrownBy(() -> service.create(duplicate)).isInstanceOf(DuplicateResourceException.class); User admin = user("admin", "admin@example.com"); admin.setId(1L); admin.setRole(Role.ADMIN); when(users.findById(1L)).thenReturn(Optional.of(admin)); assertThatThrownBy(() -> service.delete(1L, 1L)).isInstanceOf(BusinessRuleException.class); assertThatThrownBy(() -> service.changeActive(1L, false, 1L)).isInstanceOf(BusinessRuleException.class); when(users.countByRoleAndActiveTrue(Role.ADMIN)).thenReturn(1L); assertThatThrownBy(() -> service.delete(1L, 2L)).isInstanceOf(BusinessRuleException.class); User demoted = user("admin", "admin@example.com"); demoted.setId(1L); demoted.setRole(Role.CUSTOMER); assertThatThrownBy(() -> service.update(1L, demoted, 1L)).isInstanceOf(BusinessRuleException.class); }
     @Test void userWithOtpHistoryMustBeLockedInsteadOfDeleted() { UserService service = new UserServiceImpl(users, new BCryptPasswordEncoder(), emailOtps); User customer = user("otp-user", "otp-user@example.com"); customer.setId(6L); when(users.findById(6L)).thenReturn(Optional.of(customer)); when(emailOtps.existsByUserId(6L)).thenReturn(true); assertThatThrownBy(() -> service.delete(6L, 1L)).isInstanceOf(BusinessRuleException.class); }
+    @Test void productRejectsNegativePriceAndStock() { ProductService service = new ProductServiceImpl(products, orderItems); Product product = new Product(); product.setName("Keyboard"); product.setPrice(BigDecimal.valueOf(-1)); product.setStock(1); assertThatThrownBy(() -> service.create(product)).isInstanceOf(IllegalArgumentException.class); product.setPrice(BigDecimal.TEN); product.setStock(-1); assertThatThrownBy(() -> service.create(product)).isInstanceOf(IllegalArgumentException.class); }
+    @Test void productLinkedToOrderIsDeactivatedInsteadOfDeleted() { ProductService service = new ProductServiceImpl(products, orderItems); Product product = new Product(); product.setId(7L); product.setName("Mouse"); product.setPrice(BigDecimal.TEN); product.setStock(2); when(products.findById(7L)).thenReturn(Optional.of(product)); when(orderItems.existsByProductId(7L)).thenReturn(true); assertThatThrownBy(() -> service.deleteOrDeactivate(7L)).isInstanceOf(BusinessRuleException.class); assertThat(product.getActive()).isFalse(); verify(products).save(product); verify(products, never()).delete(any()); }
+    @Test void orderStatusFollowsWorkflowAndRejectsCompletedRollback() { OrderService service = new OrderServiceImpl(orders); Order order = new Order(); order.setId(8L); order.setOrderStatus(OrderStatus.PENDING); when(orders.findDetailById(8L)).thenReturn(Optional.of(order)); when(orders.save(any())).thenAnswer(i -> i.getArgument(0)); assertThat(service.updateStatus(8L, OrderStatus.CONFIRMED).getOrderStatus()).isEqualTo(OrderStatus.CONFIRMED); order.setOrderStatus(OrderStatus.COMPLETED); assertThatThrownBy(() -> service.updateStatus(8L, OrderStatus.PENDING)).isInstanceOf(BusinessRuleException.class); }
     private User user(String username, String email) { User user = new User(); user.setUsername(username); user.setEmail(email); user.setRole(Role.CUSTOMER); user.setActive(true); user.setEmailVerified(false); return user; }
 }

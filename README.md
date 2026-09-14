@@ -99,3 +99,10 @@ WAR `target/khanggear-ver2.war` chi deploy voi context `/khanggear-ver2`, khong 
 - ADMIN khong the tu khoa, tu xoa hay tu ha role cua chinh minh; he thong cung bao ve ADMIN active cuoi cung. User co lich su OTP khong bi xoa, ma phai khoa.
 - Thay doi role co hieu luc khi tai khoan dang nhap lai. JSTL core TLD duoc dong goi truc tiep trong WAR de JSP Category/User render on dinh tren embedded Tomcat.
 - Tao ADMIN local an toan khi can: dat `APP_ADMIN_USERNAME`, `APP_ADMIN_PASSWORD`, `APP_ADMIN_EMAIL`, sau do chay voi profile `dev-bootstrap`. Profile nay chi tao ADMIN neu username/email chua ton tai va khong log password. Khong bat profile nay o moi truong production.
+
+## Giai doan 4C: Product, Order va Statistics
+
+- ADMIN va MANAGER co the quan ly san pham tai `/admin/product/list`: tim kiem, loc danh muc/trang thai, them, sua, xoa/khoa va upload anh PNG/JPG/JPEG/WebP an toan.
+- ADMIN va MANAGER co the xem danh sach/chi tiet don hang tai `/admin/order/list` va cap nhat trang thai theo luong PENDING -> CONFIRMED -> SHIPPING -> COMPLETED; don PENDING/CONFIRMED co the huy.
+- Bao cao tong quan tai `/admin/statistics`; ADMIN quan ly User, MANAGER khong truy cap User.
+- Them migration idempotent cho `products`, `orders`, `order_items` trong `sql/schema.sql`; du lieu mau san pham trong `sql/seed.sql`. Gia tri gia/ton kho va quan he danh muc duoc kiem tra o server.

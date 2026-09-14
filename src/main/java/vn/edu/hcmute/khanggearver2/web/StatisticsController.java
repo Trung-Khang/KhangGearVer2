@@ -1,0 +1,3 @@
+package vn.edu.hcmute.khanggearver2.web;
+import org.springframework.context.annotation.Profile; import org.springframework.stereotype.Controller; import org.springframework.ui.Model; import org.springframework.web.bind.annotation.GetMapping; import vn.edu.hcmute.khanggearver2.service.StatisticsService;
+@Controller @Profile("!foundation") public class StatisticsController { private final StatisticsService statistics; public StatisticsController(StatisticsService s){statistics=s;} @GetMapping("/admin/statistics") String statistics(Model model){model.addAttribute("summary",statistics.summary());return "admin/statistics";} }

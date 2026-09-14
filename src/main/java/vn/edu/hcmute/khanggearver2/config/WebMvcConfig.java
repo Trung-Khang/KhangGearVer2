@@ -18,5 +18,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
     }
     @Override public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/media/categories/**").addResourceLocations("file:uploads/categories/");
+        registry.addResourceHandler("/media/products/**").addResourceLocations("file:uploads/products/");
     }
 }

@@ -68,11 +68,18 @@ class SecurityIntegrationTests {
                 .andExpect(status().isOk())
                 .andExpect(view().name("admin/dashboard"));
         mockMvc.perform(get("/admin").with(user("manager").roles("MANAGER")))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isOk())
+                .andExpect(view().name("admin/dashboard"));
         mockMvc.perform(get("/admin").with(user("customer").roles("CUSTOMER")))
                 .andExpect(status().isForbidden());
         mockMvc.perform(get("/admin/category/list").with(user("admin").roles("ADMIN")))
                 .andExpect(status().isOk()).andExpect(view().name("admin/category/list"));
+        mockMvc.perform(get("/admin/product/list").with(user("manager").roles("MANAGER")))
+                .andExpect(status().isOk()).andExpect(view().name("admin/product/list"));
+        mockMvc.perform(get("/admin/order/list").with(user("manager").roles("MANAGER")))
+                .andExpect(status().isOk()).andExpect(view().name("admin/order/list"));
+        mockMvc.perform(get("/admin/statistics").with(user("manager").roles("MANAGER")))
+                .andExpect(status().isOk()).andExpect(view().name("admin/statistics"));
     }
 
     @Test
