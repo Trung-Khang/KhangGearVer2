@@ -1,5 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="c" uri="/WEB-INF/tld/jakarta-tags-core.tld" %>
 <!doctype html><html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Danh sách danh mục | KhangGear</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"></head><body class="bg-light">
 <nav class="navbar navbar-dark bg-primary"><div class="container"><a class="navbar-brand" href="${pageContext.request.contextPath}/admin">KhangGear Admin</a><form method="post" action="${pageContext.request.contextPath}/logout"><input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"><button class="btn btn-outline-light" type="submit">Đăng xuất</button></form></div></nav>
 <main class="container py-4"><div class="d-flex justify-content-between align-items-center mb-3"><div><a href="${pageContext.request.contextPath}/admin">Quản trị</a><h1 class="h3 mb-0">Danh mục sản phẩm</h1></div><a class="btn btn-primary" href="${pageContext.request.contextPath}/admin/category/add">+ Thêm danh mục</a></div>

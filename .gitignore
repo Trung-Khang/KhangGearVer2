@@ -9,3 +9,4 @@ target/
 .env.local
 application-local.properties
 reports/
+uploads/

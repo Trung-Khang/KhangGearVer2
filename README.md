@@ -91,3 +91,11 @@ WAR `target/khanggear-ver2.war` chi deploy voi context `/khanggear-ver2`, khong 
 - Migration `sql/schema.sql` cho `icon` la idempotent; khong drop bang va khong xoa du lieu.
 - Runtime local co the ket noi `KhangGearVer2DB` qua cau hinh `.env.local` duoc nap bang `optional:file:./.env.local[.properties]`. Khong dua gia tri nhay cam vao Git.
 - Category CRUD su dung PRG, CSRF, validation server-side va upload icon an toan.
+
+## Giai doan 4B: Quan ly User va Role
+
+- Chi ADMIN duoc dung `/admin/user/list`, `/add`, `/edit`, `/toggle-status` va `/delete`. MANAGER/CUSTOMER nhan 403.
+- Danh sach co tim kiem, phan trang, trang thai active/email verification; khong hien thi password hoac BCrypt hash. Them/sua User dung CSRF, PRG, validation server-side va PasswordEncoder BCrypt.
+- ADMIN khong the tu khoa, tu xoa hay tu ha role cua chinh minh; he thong cung bao ve ADMIN active cuoi cung. User co lich su OTP khong bi xoa, ma phai khoa.
+- Thay doi role co hieu luc khi tai khoan dang nhap lai. JSTL core TLD duoc dong goi truc tiep trong WAR de JSP Category/User render on dinh tren embedded Tomcat.
+- Tao ADMIN local an toan khi can: dat `APP_ADMIN_USERNAME`, `APP_ADMIN_PASSWORD`, `APP_ADMIN_EMAIL`, sau do chay voi profile `dev-bootstrap`. Profile nay chi tao ADMIN neu username/email chua ton tai va khong log password. Khong bat profile nay o moi truong production.

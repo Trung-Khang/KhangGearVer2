@@ -71,6 +71,8 @@ class SecurityIntegrationTests {
                 .andExpect(status().isForbidden());
         mockMvc.perform(get("/admin").with(user("customer").roles("CUSTOMER")))
                 .andExpect(status().isForbidden());
+        mockMvc.perform(get("/admin/category/list").with(user("admin").roles("ADMIN")))
+                .andExpect(status().isOk()).andExpect(view().name("admin/category/list"));
     }
 
     @Test
@@ -104,6 +106,28 @@ class SecurityIntegrationTests {
         mockMvc.perform(post("/logout").with(csrf()).with(user("admin").roles("ADMIN")))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/login?logout"));
+    }
+
+    @Test
+    void userAdministrationIsAdminOnlyAndCreatesBcryptAccounts() throws Exception {
+        mockMvc.perform(get("/admin/user/list").with(user("admin").roles("ADMIN")))
+                .andExpect(status().isOk()).andExpect(view().name("admin/user/list"));
+        mockMvc.perform(get("/admin/user/list").with(user("manager").roles("MANAGER")))
+                .andExpect(status().isForbidden());
+        mockMvc.perform(get("/admin/user/list").with(user("customer").roles("CUSTOMER")))
+                .andExpect(status().isForbidden());
+        mockMvc.perform(post("/admin/user/add").with(user("admin").roles("ADMIN"))
+                        .param("username", "missing-csrf"))
+                .andExpect(status().isForbidden());
+        mockMvc.perform(post("/admin/user/add").with(user("admin").roles("ADMIN")).with(csrf())
+                        .param("username", "new-admin-user").param("email", "new-admin-user@test.local")
+                        .param("fullName", "New User").param("phone", "0900000011").param("role", "MANAGER")
+                        .param("password", "new-password").param("confirmPassword", "new-password")
+                        .param("active", "true").param("emailVerified", "true"))
+                .andExpect(status().is3xxRedirection()).andExpect(redirectedUrl("/admin/user/list"));
+        User created = users.findByUsernameIgnoreCase("new-admin-user").orElseThrow();
+        org.assertj.core.api.Assertions.assertThat(passwordEncoder.matches("new-password", created.getPassword())).isTrue();
+        org.assertj.core.api.Assertions.assertThat(created.getRole()).isEqualTo(Role.MANAGER);
     }
 
     private User testAccount(String username, String email, Role role, boolean active, boolean verified) {

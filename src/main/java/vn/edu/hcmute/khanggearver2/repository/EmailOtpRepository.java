@@ -7,4 +7,5 @@ import vn.edu.hcmute.khanggearver2.domain.OtpPurpose;
 
 public interface EmailOtpRepository extends JpaRepository<EmailOtp, Long> {
     Optional<EmailOtp> findTopByUserIdAndPurposeAndConsumedAtIsNullOrderByCreatedAtDesc(Long userId, OtpPurpose purpose);
+    boolean existsByUserId(Long userId);
 }
