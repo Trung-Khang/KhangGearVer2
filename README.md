@@ -118,3 +118,9 @@ WAR `target/khanggear-ver2.war` chi deploy voi context `/khanggear-ver2`, khong 
 - Cart luu trong server session qua `/api/cart`; them/sua/xoa san pham luon doc lai gia, trang thai va ton kho tu database.
 - Checkout `POST /api/cart/checkout` tao `orders` va `order_items`, snapshot ten/gia, tru kho trong mot transaction va chi xoa cart sau khi luu thanh cong. CSRF token lay qua `GET /api/csrf`.
 - Customer co `/api/account/profile`, `/api/account/orders` va huy don PENDING/CONFIRMED. Giao dien React da co `/cart`, `/checkout`, `/account`, `/orders`.
+
+## Giai doan 7: Role UI va storefront polish
+
+- Bo sung JSON error contract `success=false,message` cho API cart/checkout/account; frontend hien thi loi nghiep vu thay vi trang loi HTML.
+- Dashboard admin co lien ket Product/Order/Statistics; MANAGER duoc quan ly Category/Product/Order/Statistics, ADMIN moi duoc quan ly User. Customer chi dung luong storefront/account cua minh.
+- Storefront giu namespace CSS `kg-`, responsive desktop/mobile, nut them vao gio, checkout, account va don hang; tai san build `frontend/dist` khong commit.
