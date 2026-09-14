@@ -112,3 +112,9 @@ WAR `target/khanggear-ver2.war` chi deploy voi context `/khanggear-ver2`, khong 
 - Storefront React/Vite nam trong `frontend/`, chay bang `npm install && npm run dev`, co responsive layout, home hero, danh muc, catalog tim kiem/loc/sap xep/phan trang va trang chi tiet san pham.
 - API GET cong khai: `/api/storefront/categories`, `/api/storefront/products`, `/api/storefront/products/{id}`, `/api/storefront/featured`, `/api/storefront/best-selling`, `/api/storefront/newest`.
 - Frontend dung Axios, React Router va lucide-react; API khong tra truc tiep entity JPA va URL anh dung media public. `frontend/node_modules` va `frontend/dist` duoc ignore.
+
+## Giai doan 6: Cart, Checkout va Customer Orders
+
+- Cart luu trong server session qua `/api/cart`; them/sua/xoa san pham luon doc lai gia, trang thai va ton kho tu database.
+- Checkout `POST /api/cart/checkout` tao `orders` va `order_items`, snapshot ten/gia, tru kho trong mot transaction va chi xoa cart sau khi luu thanh cong. CSRF token lay qua `GET /api/csrf`.
+- Customer co `/api/account/profile`, `/api/account/orders` va huy don PENDING/CONFIRMED. Giao dien React da co `/cart`, `/checkout`, `/account`, `/orders`.

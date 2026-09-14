@@ -1,6 +1,7 @@
 package vn.edu.hcmute.khanggearver2.config;
 
 import jakarta.servlet.DispatcherType;
+import org.springframework.http.HttpMethod;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -11,7 +12,8 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
  @Bean SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
    http.authorizeHttpRequests(a -> a.dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
-       .requestMatchers("/assets/**", "/css/**", "/js/**", "/images/**", "/media/**", "/api/storefront/**", "/login", "/register/**", "/verify-email/**", "/forgot-password/**", "/reset-password/**", "/403", "/error").permitAll()
+       .requestMatchers("/assets/**", "/css/**", "/js/**", "/images/**", "/media/**", "/login", "/register/**", "/verify-email/**", "/forgot-password/**", "/reset-password/**", "/403", "/error").permitAll()
+       .requestMatchers(HttpMethod.GET, "/api/storefront/**", "/api/csrf").permitAll()
        .requestMatchers("/admin/user/**").hasRole("ADMIN")
        .requestMatchers("/admin/category/**", "/admin/product/**", "/admin/order/**", "/admin/statistics", "/admin").hasAnyRole("ADMIN", "MANAGER")
        .requestMatchers("/admin/**").hasRole("ADMIN")
