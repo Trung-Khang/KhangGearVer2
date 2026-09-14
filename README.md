@@ -106,3 +106,9 @@ WAR `target/khanggear-ver2.war` chi deploy voi context `/khanggear-ver2`, khong 
 - ADMIN va MANAGER co the xem danh sach/chi tiet don hang tai `/admin/order/list` va cap nhat trang thai theo luong PENDING -> CONFIRMED -> SHIPPING -> COMPLETED; don PENDING/CONFIRMED co the huy.
 - Bao cao tong quan tai `/admin/statistics`; ADMIN quan ly User, MANAGER khong truy cap User.
 - Them migration idempotent cho `products`, `orders`, `order_items` trong `sql/schema.sql`; du lieu mau san pham trong `sql/seed.sql`. Gia tri gia/ton kho va quan he danh muc duoc kiem tra o server.
+
+## Giai doan 5: React Storefront va API cong khai
+
+- Storefront React/Vite nam trong `frontend/`, chay bang `npm install && npm run dev`, co responsive layout, home hero, danh muc, catalog tim kiem/loc/sap xep/phan trang va trang chi tiet san pham.
+- API GET cong khai: `/api/storefront/categories`, `/api/storefront/products`, `/api/storefront/products/{id}`, `/api/storefront/featured`, `/api/storefront/best-selling`, `/api/storefront/newest`.
+- Frontend dung Axios, React Router va lucide-react; API khong tra truc tiep entity JPA va URL anh dung media public. `frontend/node_modules` va `frontend/dist` duoc ignore.
